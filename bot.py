@@ -99,18 +99,7 @@ def procesar_respuesta_acumulada(chat_id, es_hermana):
     ahora = datetime.datetime.now(ZONA_HORARIA)
     historial = historial_hermana if es_hermana else historial_contigo
     
-    frases_espera = ["desocupes", "hblamos alrato", "hablamos al rato", "ahi dsp", "cuando puedas"]
-    le_dice_que_se_desocupe = any(frase in texto_final.lower() for frase in frases_espera)
-
-    if le_dice_que_se_desocupe:
-        respuesta_cierre = random.choice(["arre w, al rato", "va, ahí te aviso", "cámara loco, al rato hablamos"])
-        if es_hermana: respuesta_cierre = "va que va chaparra, al rato te hablo"
-        
-        historial.append({"role": "user", "content": texto_final})
-        historial.append({"role": "assistant", "content": respuesta_cierre})
-        try: bot.send_message(chat_id, respuesta_cierre)
-        except Exception: pass
-        return
+    
 
     estado_actual = generar_estado_interno(ahora)
     estilo_chat = PROMPT_ESTILO_HERMANA if es_hermana else PROMPT_ESTILO_HERMANO
