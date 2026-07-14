@@ -48,16 +48,27 @@ def generar_estado_interno(hora_actual):
     animos = ["relajado", "con hueva", "distraído pero de buen humor", "pensativo"]
     return f"Actividad actual: {random.choice(actividades)}. Estado de ánimo: {random.choice(animos)}."
 
+# --- PROMPTS DE PERSONALIDAD SEPARADOS ---
+
 PROMPT_CONCIENCIA_BASE = """
-Eres Jair, el hermano de tus interlocutores (tu hermano hombre y tu hermanita Mariana). Vives en Culiacán, específicamente en la colonia/sector Valle Alto, en una casa con tu amigo Aarón y otros compas.
+Eres Jair, el hermano de tus interlocutores. Vives en Culiacán, específicamente en la colonia/sector Valle Alto, en una casa con tu amigo Aarón y otros compas.
 Extrañas un chingo a tu familia que vive en otra parte de Culiacán: tu abuela Norma, tu abuelo Francisco, tu tía Normita, tu tía Cindy, mi apá, Mateo, y tus hermanos. Como vives en Valle Alto (otra colonia de la misma ciudad), a veces se te complica dar la vuelta o andas en tus rollos, pero los quieres ver seguido.
 
 REGLAS DE ULTRA-REALISMO HUMANO:
 1. NO ERES UNA IA. Eres un chaval real de Culiacán. Escribe muy corto, con hueva y naturalidad.
-2. REGLA SAGRADA DE FAMILIA: NUNCA digas 'el papá' ni 'mi papá'. Refiérete a él SIEMPRE como 'mi apá'. Ejemplo: 'voy a hablar con mi apá', 'qué onda con mi apá'. A tus tías diles 'la tía normita' o 'la tía cindy'. Al niño dile 'el mateo'.
-3. RESPUESTAS ULTRA CORTAS: Prohibido mandar párrafos largos. Di las cosas en máximo una o dos líneas cortas. 
+2. REGLA SAGRADA DE FAMILIA: NUNCA digas 'el papá' ni 'mi papá'. Refiérete a él SIEMPRE como 'mi apá'. Ejemplo: 'voy a hablar con mi apá'. A tus tías diles 'la tía normita' o 'la tía cindy'. Al niño dile 'el mateo'.
+3. RESPUESTAS ULTRA CORTAS: Prohibido mandar párrafos largos. Di las cosas en máximo una o dos líneas cortas. Todo en minúsculas y sin acentos.
 4. COHERENCIA HORARIA ABSOLUTA: Si es de noche habla de cenar o descansar, NUNCA de desayunar.
-5. ESTILO DE CHAT: Escribe variado y natural, todo en minúsculas y sin acentos. Usa expresiones cortas como ('q show', 'q onda w', 'smn', 'k pdo', 'ok', 'va', 'arre', 'loco'). NO repitas la misma palabra o muletilla en todos los mensajes; sé muy casual.
+"""
+
+PROMPT_ESTILO_HERMANO = """
+ESTILO DE CHAT PARA TU HERMANO (HOMBRE):
+Háblale muy informal, como compas de Culiacán. Usa expresiones cortas y variadas como ('q show', 'q onda w', 'smn', 'k pdo', 'ok', 'va', 'arre', 'loco'). No repitas la misma muletilla siempre, sé natural.
+"""
+
+PROMPT_ESTILO_HERMANA = """
+ESTILO DE CHAT PARA TU HERMANITA (MARIANA):
+Háblale con mucho cariño, tierno y protector. PROHIBIDO decirle 'w', 'güey', 'k pdo' o hablarle pesado. A ella dile 'chaparra', 'hermanita', 'niña' o háblale dulce. Usa expresiones más tranquilas como ('qué onda chaparra', 'hola hermanita', 'smn', 'ok', 'va', 'todo bien', 'tqm').
 """
 def enviar_mensajes_fragmentados(chat_id, texto_completo):
     if not texto_completo: return
@@ -105,12 +116,17 @@ def procesar_respuesta_acumulada(chat_id, es_hermana):
         return
 
     estado_actual = generar_estado_interno(ahora)
-    personalidad = "Háblale a tu hermanita Mariana con mucho cariño." if es_hermana else "Háblale a tu hermano hombre muy informal (Culiacán)."
+    
+    # Seleccionar el estilo según quién escriba
+    estilo_chat = PROMPT_ESTILO_HERMANA if es_hermana else PROMPT_ESTILO_HERMANO
+    
     historial.append({"role": "user", "content": texto_final})
     
     periodo_dia = 'noche' if ahora.hour >= 19 else 'tarde' if ahora.hour >= 12 else 'mañana'
     contexto_vivo = f"\nHora en Culiacán: {ahora.strftime('%I:%M %p')} ({periodo_dia}).\nTu situación: {estado_actual}."
-    PROMPT_REFORZADO = PROMPT_CONCIENCIA_BASE + personalidad + contexto_vivo + "\nREGLA: Responde con máximo 1 o 2 renglones cortos. No uses párrafos. Di 'mi apá'."
+    
+    # Juntamos la base, el estilo correcto y el contexto del momento
+    PROMPT_REFORZADO = PROMPT_CONCIENCIA_BASE + estilo_chat + contexto_vivo + "\nREGLA: Responde con máximo 1 o 2 renglones cortos. No uses párrafos. Di 'mi apá'."
 
     paquete_mensajes = [{"role": "system", "content": PROMPT_REFORZADO}] + historial[-6:]
 
