@@ -17,8 +17,8 @@ def run_flask():
     app.run(host='0.0.0.0', port=8080)
 
 # 1. Configuración de tus llaves
-TELEGRAM_TOKEN = "TU_TOKEN_DE_TELEGRAM_AQUI"
-GROQ_KEY = "TU_CLAVE_DE_GROQ_AQUI"
+TELEGRAM_TOKEN = "8620327068:AAFT4nnwTmntE_-2Gwb1oRBJcIhDOu9fQlg"
+GROQ_KEY = "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"
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 client = Groq(api_key=GROQ_KEY)
@@ -27,7 +27,7 @@ ZONA_HORARIA = pytz.timezone('America/Mazatlan')
 
 # IDs de Telegram
 ID_CONTIGO = 1941099952       
-ID_HERMANA = 987654321       
+ID_HERMANA = 8718700106       
 
 historial_contigo = []
 historial_hermana = []
