@@ -23,7 +23,6 @@ def run_flask():
     app.run(host='0.0.0.0', port=8080)
 
 # 2. INICIALIZACIÓN DE TOKENS Y CLIENTES
-# (Asegúrate de poner tus llaves reales aquí dentro de las comillas)
 TELEGRAM_TOKEN = "8620327068:AAFT4nnwTmntE_-2Gwb1oRBJcIhDOu9fQlg"
 GROQ_KEY = "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"
 
@@ -130,6 +129,7 @@ def escuchar_mensaje(message):
     system_prompt = PROMPT_CONCIENCIA_BASE + "\n" + prompt_estilo
     
     try:
+        # AQUÍ ESTABA EL ERROR: El código estaba desalineado fuera del try
         completion = client.chat.completions.create(
             model="llama3-8b-8192",
             messages=[
@@ -143,7 +143,7 @@ def escuchar_mensaje(message):
     except Exception:
         respuesta_ia = "q onda w, ando sin señal casi" if not es_hermana else "hola chaparra, casi no me agarra el internet"
 
-    # C. RECORDATORIO FAMILIAR OBLIGATORIO (Cada 2 mensajes tuyos o de ella agrega nostalgia sin inventar visitas)
+    # C. RECORDATORIO FAMILIAR OBLIGATORIO
     if conteo_mensajes[chat_id] % 2 == 0:
         frases_nostalgia = [
             " la verdad los extraño un chingo smn, ojalá pronto nos veamos",
@@ -183,16 +183,13 @@ def obtener_mensaje_espontaneo(es_hermana):
     return random.choice(opciones)
 
 def bucle_hilo_tiempo():
-    # 👇 AQUÍ ESTÁN TUS DOS IDs YA PUESTOS CORRECTAMENTE Y JUNTOS 👇
     lista_chats = [1941099952, 8718700106] 
     
     while True:
-        # Espera aleatoria entre 45 y 120 minutos
         tiempo_espera = random.randint(2700, 7200)
         time.sleep(tiempo_espera)
         
         ahora = datetime.now(tz_cln)
-        # Solo mandar mensajes si es una hora prudente (8 AM a 10 PM)
         if 8 <= ahora.hour <= 22:
             for chat_id in lista_chats:
                 es_hermana = (chat_id == 8718700106)
@@ -204,28 +201,9 @@ def bucle_hilo_tiempo():
 
 # 6. ARRANQUE DEL SISTEMA COMPLETO
 if __name__ == '__main__':
-    # A. Iniciar Flask en un hilo para mantener Render despierto
     threading.Thread(target=run_flask, daemon=True).start()
-    
-    # B. Iniciar el hilo de mensajes espontáneos
     threading.Thread(target=bucle_hilo_tiempo, daemon=True).start()
     
-    # C. Iniciar el bot de Telegram
     print("Bot de Jair iniciado de forma permanente...")
     bot.infinity_polling(timeout=10, long_polling_timeout=5)
-                try:
-                    bot.send_message(chat_id, msg)
-                except Exception:
-                    pass
 
-# 6. ARRANQUE DEL SISTEMA COMPLETO
-if __name__ == '__main__':
-    # A. Iniciar Flask en segundo plano para mantener vivo Render
-    threading.Thread(target=run_flask, daemon=True).start()
-    
-    # B. Iniciar el reloj de los mensajes espontáneos
-    threading.Thread(target=bucle_hilo_tiempo, daemon=True).start()
-    
-    # C. Iniciar el bot de Telegram en bucle infinito auto-recuperable
-    print("Bot de Jair iniciado de forma permanente...")
-    bot.infinity_polling(timeout=10, long_polling_timeout=5)
