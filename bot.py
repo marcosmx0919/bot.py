@@ -206,7 +206,7 @@ if __name__ == "__main__":
     # 2. Arrancar el nuevo motor nativo de mensajes matutinos/espontáneos
     threading.Thread(target=bucle_hilo_tiempo, daemon=True).start()
     # 3. Iniciar el Bot de Telegram
-    bot.infinity_polling(timeout=25, long_polling_timeout=20)import telebot
+    bot.infinity_polling(timeout=25, long_polling_timeout=20)
 from groq import Groq
 import time
 import pytz  
